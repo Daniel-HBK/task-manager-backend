@@ -2,69 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 
 class TaskController extends Controller
 {
     /**
-     * Get all tasks with hardcoded data
+     * Get paginated tasks from the database
      *
      * @return JsonResponse
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $tasks = [
-            [
-                'id' => 1,
-                'title' => 'Setup Development Environment',
-                'description' => 'Install and configure Laravel, Next.js, and all necessary dependencies for the project',
-                'status' => 'Done'
-            ],
-            [
-                'id' => 2,
-                'title' => 'Design Database Schema',
-                'description' => 'Create ERD and define relationships between users, tasks, and projects tables',
-                'status' => 'Done'
-            ],
-            [
-                'id' => 3,
-                'title' => 'Implement Authentication',
-                'description' => 'Add JWT-based authentication with login, register, and logout functionality',
-                'status' => 'In Progress'
-            ],
-            [
-                'id' => 4,
-                'title' => 'Create Task CRUD API',
-                'description' => 'Build RESTful endpoints for creating, reading, updating, and deleting tasks',
-                'status' => 'In Progress'
-            ],
-            [
-                'id' => 5,
-                'title' => 'Build Frontend Components',
-                'description' => 'Develop reusable React components for task cards, lists, and forms',
-                'status' => 'Pending'
-            ],
-            [
-                'id' => 6,
-                'title' => 'Add Real-time Updates',
-                'description' => 'Implement WebSocket connections for live task status updates across users',
-                'status' => 'Pending'
-            ],
-            [
-                'id' => 7,
-                'title' => 'Write Unit Tests',
-                'description' => 'Create comprehensive test suites for both backend API and frontend components',
-                'status' => 'Pending'
-            ],
-            [
-                'id' => 8,
-                'title' => 'Deploy to Production',
-                'description' => 'Set up CI/CD pipeline and deploy application to cloud hosting platform',
-                'status' => 'Pending'
-            ]
-        ];
-
+        // Get page size from request, default to 10
+        $perPage = $request->query('per_page', 10);
+        
+        // Fetch paginated tasks from the database, sorted by created_at descending (newest first)
+        $tasks = Task::orderBy('created_at', 'desc')->paginate($perPage);
+        
         return response()->json($tasks);
+    }
+
+    public function store(Request $request)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status' => 'in:Done,Pending,In Progress'
+        ]);
+
+        // Set default status if not provided
+        if (!isset($validated['status'])) {
+            $validated['status'] = 'Pending';
+        }
+
+        // Create a new task
+        $task = Task::create($validated);
+
+        return response()->json($task, 201);
     }
 }
