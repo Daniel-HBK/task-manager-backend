@@ -1,61 +1,214 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task Manager - Laravel API + Next.js
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A clean and modern task management application built with Laravel (backend API) and Next.js (frontend).
 
-## About Laravel
+## Project Structure
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```
+tasks-la/
+├── backend/          # Laravel API
+│   ├── app/
+│   │   ├── Http/
+│   │   │   └── Controllers/
+│   │   │       └── TaskController.php
+│   │   └── Models/
+│   │       └── Task.php
+│   ├── routes/
+│   │   └── api.php
+│   └── config/
+│       └── cors.php
+└── frontend/         # Next.js Application
+    └── src/
+        └── app/
+            ├── components/
+            │   ├── TaskCard.tsx
+            │   └── TaskList.tsx
+            ├── types/
+            │   └── task.ts
+            └── page.tsx
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Laravel API**: RESTful endpoints serving task data with pagination
+- **Next.js Frontend**: Modern React-based UI with TypeScript
+- **Responsive Design**: Mobile-friendly grid/list layout
+- **Task Status**: Visual indicators for Pending, In Progress, and Done states
+- **Pagination**: Efficient data loading with customizable page size
+- **Clean Architecture**: Separated concerns with clear project structure
 
-## Learning Laravel
+## Prerequisites
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP 8.1+
+- Composer
+- Node.js 18+
+- npm or yarn
+- SQLite (usually comes pre-installed with PHP)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Setup Instructions
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Backend (Laravel API)
 
-## Laravel Sponsors
+1. Navigate to the backend directory:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+cd backend
+```
 
-### Premium Partners
+2. Install PHP dependencies:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+composer install
+```
 
-## Contributing
+3. Copy the environment file:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+cp .env.example .env
+```
 
-## Code of Conduct
+4. Generate application key:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+5. Create the SQLite database file:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+touch database/database.sqlite
+```
+
+6. Run database migrations to create the tasks table:
+
+```bash
+php artisan migrate
+```
+
+7. Seed the database with initial tasks:
+
+```bash
+php artisan db:seed --class=TaskSeeder
+```
+
+8. Start the Laravel development server:
+
+```bash
+php artisan serve
+```
+
+The API will be available at `http://localhost:8000`
+
+### Frontend (Next.js)
+
+1. Open a new terminal and navigate to the frontend directory:
+
+```bash
+cd frontend
+```
+
+2. Install Node dependencies:
+
+```bash
+npm install
+```
+
+3. Start the Next.js development server:
+
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:8000`
+
+## API Endpoints
+
+### GET /api/tasks
+
+Returns paginated tasks with metadata.
+
+**Query Parameters:**
+
+- `page` (optional): Page number (default: 1)
+- `per_page` (optional): Items per page (default: 10)
+
+**Example:** `GET /api/tasks?page=2&per_page=6`
+
+### POST /api/tasks
+
+Create a new task.
+
+### Task Object Structure
+
+```json
+{
+  "id": 1,
+  "title": "Task Title",
+  "description": "Task description",
+  "status": "Pending" | "In Progress" | "Done",
+  "created_at": "2025-08-21T08:00:00.000000Z",
+  "updated_at": "2025-08-21T08:00:00.000000Z"
+}
+```
+
+### Creating a Task (POST /api/tasks)
+
+```json
+{
+  "title": "New Task",
+  "description": "Optional description",
+  "status": "Pending" // Optional, defaults to "Pending"
+}
+```
+
+## Database
+
+The application uses **SQLite** as the database, which is lightweight and requires no additional setup. The database file is stored at `backend/database/database.sqlite`.
+
+### Initial Task Data
+
+The database seeder includes 15 sample tasks.
+
+## Technologies Used
+
+### Backend
+
+- **Laravel 11**: PHP framework for building the API
+- **SQLite**: Lightweight database for storing tasks
+- **CORS**: Configured for cross-origin requests from Next.js
+- **Eloquent ORM**: Database abstraction layer
+
+### Frontend
+
+- **Next.js 14**: React framework with App Router
+- **TypeScript**: Type-safe development
+- **Tailwind CSS**: Utility-first CSS framework
+- **React Hooks**: Modern state management
+
+## Development Notes
+
+- The Laravel API uses SQLite database for persistent storage
+- Tasks can be created via POST request (no authentication required)
+- CORS is configured to allow requests from `http://localhost:3000`
+- The frontend fetches paginated data with customizable page size (3, 6, 9, or 12 items)
+- Responsive grid layout adapts to screen size (1-3 columns)
+- Loading states and error handling are implemented
+- Pagination controls show current page, total items, and navigation buttons
+
+## Database Management
+
+- **Reset database**: `php artisan migrate:fresh --seed`
+- **Run only migrations**: `php artisan migrate`
+- **Seed database**: `php artisan db:seed --class=TaskSeeder`
+
+## Running Both Applications
+
+For the complete experience, run both servers simultaneously:
+
+1. Terminal 1 (Laravel): `cd backend && php artisan serve`
+2. Terminal 2 (Next.js): `cd frontend && npm run dev`
+3. Open browser to `http://localhost:3001`
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open source and available for educational purposes.
